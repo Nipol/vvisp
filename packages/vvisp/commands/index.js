@@ -4,6 +4,7 @@ const deployContract = require('./deploy-contract');
 const deployService = require('./deploy-service');
 const init = require('./init');
 const flatten = require('./flatten');
+const execute = require('./execute');
 
 module.exports = [
   abiToScript,
@@ -11,5 +12,6 @@ module.exports = [
   deployContract,
   deployService,
   init,
-  flatten
+  flatten,
+  execute
 ];
