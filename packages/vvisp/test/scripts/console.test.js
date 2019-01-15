@@ -31,10 +31,6 @@ describe('# console script test', async function() {
     });
   });
 
-  after('teardown ganache', function() {
-    this.server.close();
-  });
-
   describe('parseArgs', function() {
     const parseArgs = consoleTest.__get__('parseArgs');
 
