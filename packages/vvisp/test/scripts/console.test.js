@@ -1,6 +1,7 @@
 const rewire = require('rewire');
 const chai = require('chai');
 const path = require('path');
+const stdMocks = require('std-mocks');
 const bddStdin = require('bdd-stdin');
 
 chai.use(require('chai-as-promised')).should();
@@ -222,16 +223,16 @@ describe('# console script test', async function() {
     });
 
     it('should print invalid command message when read invalid command', async function() {
-      const expectedOutput = 'invalid command: invalid';
-
-      // mocking console.log to check console output
-      console.log = function(msg) {
-        msg.should.be.equal(expectedOutput);
-      };
+      const expectedOutput = 'invalid command: invalid\n';
+      stdMocks.use();
 
       bddStdin('invalid', 'exit');
       const commander = new ApiCommander();
       await commander.run().should.be.fulfilled;
+
+      stdMocks.restore();
+      const output = stdMocks.flush();
+      output.stdout[1].should.be.equal(expectedOutput);
     });
   });
 
@@ -239,14 +240,14 @@ describe('# console script test', async function() {
     const list = consoleTest.__get__('list');
 
     it('should print invalid message when options are invalid', async function() {
-      const expectedOutput = `invalid number of args: should be 0, got 1`;
-
-      // mocking console.log to check console output
-      console.log = function(msg) {
-        msg.should.be.equal(expectedOutput);
-      };
+      const expectedOutput = `invalid number of args: should be 0, got 1\n`;
+      stdMocks.use();
 
       await list(['hello'], {}).should.be.fulfilled;
+
+      stdMocks.restore();
+      const output = stdMocks.flush();
+      output.stdout[0].should.be.equal(expectedOutput);
     });
 
     it('should print all available smart contracts and address', async function() {
@@ -261,14 +262,14 @@ describe('# console script test', async function() {
       const expectedOutput =
         'Index\t\t\t\tContract\t\t\t\tAddress\n' +
         '[0]\t\t\t\tMainToken\t\t\t\t0xa0ff2297A8690383784d5A4723d72F8A2f5480D4\n' +
-        '[1]\t\t\t\tSaleManager\t\t\t\t0x3FcE06688555F67962978B3Eb44805849A4A8895\n';
-
-      // mocking console.log to check console output
-      console.log = function(msg) {
-        msg.should.be.equal(expectedOutput);
-      };
+        '[1]\t\t\t\tSaleManager\t\t\t\t0x3FcE06688555F67962978B3Eb44805849A4A8895\n\n';
+      stdMocks.use();
 
       await list([], dummy_apis).should.be.fulfilled;
+
+      stdMocks.restore();
+      const output = stdMocks.flush();
+      output.stdout[0].should.be.equal(expectedOutput);
     });
   });
 
@@ -297,27 +298,29 @@ describe('# console script test', async function() {
         'makeNewHaechi                           [__id, options]\n' +
         'increaseVelocity                        [__haechiId, __diff, options]\n' +
         'run                                     [options]\n' +
-        'initialize                              [__gym, options]\n';
+        'initialize                              [__gym, options]\n\n';
 
-      // mocking console.log to check console output
-      console.log = function(msg) {
-        msg.should.be.equal(expectedOutput);
-      };
+      stdMocks.use();
 
       await show(['HaechiV1'], this.apis);
+
+      stdMocks.restore();
+      const output = stdMocks.flush();
+      output.stdout[0].should.be.equal(expectedOutput);
     });
 
     it('should print invalid contract name message', async function() {
       const invalidContractName = 'InvalidTokenName';
-      const expectedOutput = "'{0}' contract does not exist".format(
+      const expectedOutput = "'{0}' contract does not exist\n".format(
         invalidContractName
       );
+      stdMocks.use();
 
-      // mocking console.log to check console output
-      console.log = function(msg) {
-        msg.should.be.equal(expectedOutput);
-      };
       await show([invalidContractName], this.apis).should.be.fulfilled;
+
+      stdMocks.restore();
+      const output = stdMocks.flush();
+      output.stdout[0].should.be.equal(expectedOutput);
     });
   });
 
