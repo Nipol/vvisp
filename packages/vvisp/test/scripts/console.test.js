@@ -3,6 +3,7 @@ const chai = require('chai');
 const path = require('path');
 const stdMocks = require('std-mocks');
 const bddStdin = require('bdd-stdin');
+const ganache = require('ganache-core');
 
 chai.use(require('chai-as-promised')).should();
 
@@ -19,7 +20,6 @@ describe('# console script test', async function() {
     process.env.PORT = '8546';
     process.env.NETWORK = 'local';
 
-    const ganache = require('ganache-core');
     this.server = ganache.server({
       mnemonic: process.env.MNEMONIC,
       default_balance_ether: 100
@@ -31,8 +31,19 @@ describe('# console script test', async function() {
     });
   });
 
-  after('teardown ganache', function() {
+  after('reload ganache', function() {
     this.server.close();
+    require('dotenv').config();
+
+    this.server = ganache.server({
+      mnemonic: process.env.MNEMONIC,
+      default_balance_ether: 100000
+    });
+    this.server.listen(process.env.PORT, function(err, blockchain) {
+      if (err) {
+        should.fail();
+      }
+    });
   });
 
   describe('parseArgs', function() {
