@@ -132,7 +132,7 @@ describe('# console script test', async function() {
       }
     });
 
-    it('should throw an error when no contracts in the state file.', function() {
+    it('should throw an error when mismatched contracts exists in the state file.', function() {
       const stateFile = path.join(
         __dirname,
         '..',
